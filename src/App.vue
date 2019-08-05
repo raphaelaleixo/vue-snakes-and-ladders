@@ -1,5 +1,12 @@
 <template>
   <div id="app">
+    <div>Player: {{game.turn + 1}}</div>
+    <div>Die 01: {{dice1}} </div>
+    <div>Die 02: {{dice2}} </div>
+    <div v-if="game.winner">Winner: Player {{game.turn + 1}}</div>
+    <button v-if="!game.winner"
+      :disabled="game.walked > 0"
+      @click="walkTo(game.turn)">Roll dice</button>
     <transition-group name="move-piece"
       tag="div"
       class="board"
@@ -14,27 +21,37 @@
           class="square__number square__to">{{square.to}}</span>
       </div>
       <div class="piece"
-        @click="walkTo($event)"
-        key="piece1"
-        :style="{'grid-area':'square'+position, 'pointer-events:none' : walked !== 0}"></div>
+        v-for="(player, index) in players"
+        :key="'player-'+index"
+        :class="{'player--active':index == game.turn}"
+        :style="{'grid-area':'square'+player.position}"></div>
     </transition-group>
   </div>
 </template>
 
 <script>
-  let el;
+  let currentPiece;
   export default {
     name: "app",
     data () {
       return {
         board: {
           base: 8,
-          squares:[],
-          specialSquares:[1],
-          tries:0
+          squares: [],
+          specialSquares: [1],
         },
-        position: 60,
-        walked: 0,
+        game: {
+          winner: false,
+          walked: 0,
+          players: 3,
+          turn: 0
+        },
+        players: [
+          { position: 1 },
+          { position: 1 },
+          { position: 1 },
+          { position: 1 }
+        ],
         dice1: 1,
         dice2: 1
       }
@@ -68,71 +85,93 @@
         this.dice1 = Math.floor(Math.random() * 6) + 1;
         this.dice2 = Math.floor(Math.random() * 6) + 1;
       },
-      walkTo (event) {
+      walkTo (player) {
         this.rollDice();
-        this.walked = this.dice1 + this.dice2;
-        this.trywalk(event.target)
+        this.game.walked = this.dice1 + this.dice2;
+        this.trywalk(player)
       },
-      trywalk () {
-        el.removeEventListener('animationend', walk)
+      trywalk (player) {
+        currentPiece = document.querySelectorAll('.piece')[player];
+        currentPiece.removeEventListener('animationend', walk)
         const walk = () => {
-          if (this.walked > 0) {
-            this.position++;
-            if (this.position > this.totalSquares) {
-              this.position--;
-              this.bounceBack()
-              el.removeEventListener('animationend', walk)
+          if (this.game.walked > 0) {
+            this.players[player].position++;
+            if (this.players[player].position > this.totalSquares) {
+              this.players[player].position--;
+              this.bounceBack(player)
+              currentPiece.removeEventListener('animationend', walk)
             } else {
-              this.walked--;
-              el.addEventListener('animationend', walk)
+              this.game.walked--;
+              currentPiece.addEventListener('animationend', walk)
             }
           } else {
-            this.checkPosition()
-            el.removeEventListener('animationend', walk)
+            this.checkPosition(player)
+            currentPiece.removeEventListener('animationend', walk)
           }
         }
         walk();
       },
-      bounceBack () {
-        el.removeEventListener('animationend', bounce)
+      bounceBack (player) {
+        currentPiece = document.querySelectorAll('.piece')[player];
+        currentPiece.removeEventListener('animationend', bounce)
         const bounce = () => {
-          if (this.walked > 0) {
-            this.position--;
-            this.walked--;
-            el.addEventListener('animationend', bounce)
+          if (this.game.walked > 0) {
+            this.players[player].position--;
+            this.game.walked--;
+            currentPiece.addEventListener('animationend', bounce)
           } else {
-            this.checkPosition()
-            el.removeEventListener('animationend', bounce)
+            this.checkPosition(player)
+            currentPiece.removeEventListener('animationend', bounce)
           }
         }
         bounce()
       },
-      checkPosition () {
+      checkPosition (player) {
         let specialPositions = this.board.squares.map(item => item.from);
-        if (specialPositions.includes(this.position)) {
-          let rule = this.board.squares.filter(item => item.from === this.position)
-          this.position = rule[0].to
+        if (specialPositions.includes(this.players[player].position)) {
+          let rule = this.board.squares.filter(item => item.from === this.players[player].position)
+          this.players[player].position = rule[0].to
+        }
+        if (this.players[player].position === this.totalSquares) {
+          this.game.winner = 'player-' + this.game.turn;
+          return false;
+        }
+        this.nextTurn()
+      },
+      nextTurn () {
+        this.game.turn++;
+        if (this.game.turn === this.players.length) {
+          this.game.turn = 0;
         }
       },
       chooseRandomSquare (higherOrLower, numberToCompare) {
         this.tries++;
         let specialSquare = Math.floor(Math.random() * (this.totalSquares)) + 1;
-       
-        if (numberToCompare === 'error' || this.tries > 10) {
-          this.tries = 0;
-          return 'error';
+
+        if (higherOrLower === 'lower') {
+          let lowerSquares = Array(numberToCompare - 1).fill().map((v, i) => i + 1);
+          if (lowerSquares.every(item => this.board.specialSquares.includes(item))) {
+            return 'error'
+          }
         }
-        
+
+        if (higherOrLower === 'higher') {
+          let higherSquares = Array(this.totalSquares - numberToCompare).fill().map((v, i) => i + 1 + numberToCompare);
+          if (higherSquares.every(item => this.board.specialSquares.includes(item))) {
+            return 'error'
+          }
+        }
+
         if (this.board.specialSquares.includes(specialSquare)) {
           return this.chooseRandomSquare(higherOrLower, numberToCompare);
         }
-        
+
         if (higherOrLower === 'higher' && specialSquare > numberToCompare ||
-            higherOrLower === 'lower' && specialSquare < numberToCompare ||
-            !higherOrLower) {
+          higherOrLower === 'lower' && specialSquare < numberToCompare ||
+          !higherOrLower) {
           return specialSquare;
         } else {
-           return this.chooseRandomSquare(higherOrLower, numberToCompare);
+          return this.chooseRandomSquare(higherOrLower, numberToCompare);
         }
       },
       createGameBoard () {
@@ -156,7 +195,7 @@
       },
     },
     mounted () {
-      el = document.querySelector('.piece');
+      currentPiece = document.querySelector('.piece');
       this.createGameBoard();
       for (let i = 0; i < Math.floor(this.board.base / 2); i++) {
         this.createSpecialSquare('higher');
@@ -215,10 +254,10 @@
   .square__number {
     position: absolute;
   }
-  
-  .square__to { 
+
+  .square__to {
     color: green;
-    bottom:0.5em;
+    bottom: 0.5em;
   }
 
   .square__to:after {
@@ -237,27 +276,49 @@
   }
 
   .piece {
-    transition: all 0.3s;
+    transition: all 0.5s;
     position: relative;
+  }
+  .piece--active {
+    z-index: 10;
   }
 
   .piece:before {
     content: "";
     position: absolute;
-    width: 25%;
-    height: 25%;
+    width: calc(50% - 1em);
+    height: calc(50% - 1em);
     background: red;
     top: 0.5em;
     left: 0.5em;
     border-radius: 50%;
     box-shadow: inset 0 0 0 2px darkred, 0 0 0.5em 0 #00000088;
   }
-
+  .piece:nth-last-child(2):before {
+    top: auto;
+    bottom: 0.5em;
+    background: blue;
+    box-shadow: inset 0 0 0 2px darkblue, 0 0 0.5em 0 #00000088;
+  }
+  .piece:nth-last-child(3):before {
+    left: auto;
+    right: 0.5em;
+    background: green;
+    box-shadow: inset 0 0 0 2px darkgreen, 0 0 0.5em 0 #00000088;
+  }
+  .piece:nth-last-child(4):before {
+    left: auto;
+    top: auto;
+    bottom: 0.5em;
+    right: 0.5em;
+    background: yellow;
+    box-shadow: inset 0 0 0 2px darkgoldenrod, 0 0 0.5em 0 #00000088;
+  }
   .move-piece-move:before {
-    animation: walk 0.3s linear 0s;
+    animation: bounce 0.5s linear 0s;
   }
 
-  @keyframes walk {
+  @keyframes bounce {
     0% {
       transform: scale(1);
     }
