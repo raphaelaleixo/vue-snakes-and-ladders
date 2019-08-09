@@ -44,7 +44,7 @@
           base: 5,
           winner: false,
           walked: 0,
-          playerNumber: 3,
+          numberOfPlayers: 3,
           turn: 0
         },
         players: [],

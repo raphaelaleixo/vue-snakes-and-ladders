@@ -30,17 +30,31 @@ export default {
       context.commit('LOAD_ACTIVE_PROJECT', snapshot.val());
     });
   },
-  addMember: async (context, payload) => {
-    const memberList = database.ref('members/');
-    const newMember = memberList.push();
-    await newMember.set({
+  addGame: async (context, payload) => {
+    const gameList = database.ref('/');
+    const game = gameList.push();
+    const gamekey = game.getKey();
+
+    const createPlayers = () => {
+      const players = [];
+      const numberOfPlayers = payload.numberOfPlayers;
+      for (let i = 0; i < numberOfPlayers; i++) {
+        players.push({
+          position: 1
+        })
+      }
+      return players
+    }
+    game.set({
       ...payload,
+      players: createPlayers(),
+      id: gamekey
     });
-    context.commit('CREATE_NEW_MEMBER', payload);
+    context.commit('CREATE_NEW_GAME', payload);
   },
   addProject: async (context, payload) => {
     const projectList = database.ref('projects/');
-    const newProject = projectList.push();
+    const newProject = projectList.push().getKey();
     await newProject.set({
       ...payload,
     });

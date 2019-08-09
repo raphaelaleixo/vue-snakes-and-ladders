@@ -2,8 +2,8 @@ export default {
   LOAD_MEMBERS: (state, payload) => {
     state.members = payload;
   },
-  CREATE_NEW_MEMBER: (state, payload) => {
-    state.members = [...state.members, payload];
+  CREATE_NEW_GAME: (state, payload) => {
+    state.games = [...state.games, payload];
   },
   LOAD_PROJECTS: (state, payload) => {
     state.projects = payload;

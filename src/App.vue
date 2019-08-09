@@ -6,8 +6,8 @@
         <router-view />
       </div>
     </div>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/board">About</router-link>
+    <!-- <router-link to="/">Home</router-link> |
+    <router-link to="/board">About</router-link> -->
   </div>
 </template>
 
@@ -25,10 +25,16 @@
     padding: 0;
     background: #ffffea;
     font-family: "Quicksand", sans-serif;
+    height:100vh;
   }
-
+  .wrapper {
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    height:100%;
+  }
   .card {
-    width: 80vh;
+    width: 70vh;
     max-width: 90%;
   }
   .card__wrapper {
