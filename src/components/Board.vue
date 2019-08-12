@@ -19,7 +19,6 @@
 </template>
 
 <script>
-  let currentPiece;
   import Square from '@/components/Square';
   import Piece from '@/components/Piece';
   import {mapActions} from 'vuex';
@@ -74,8 +73,9 @@
     },
     methods: {
       ...mapActions(['updateGame']),
-      createPlayers () {
+      setupBoard () {
         this.players = this.game.players.map((item, index) => ({ ...item, number: index }))
+        this.turn = this.game.turn;
       },
       rollDice () {
         this.game.dice.dice1 = Math.floor(Math.random() * 6) + 1;
@@ -86,37 +86,30 @@
         this.trywalk(player)
       },
       trywalk (player) {
-        currentPiece = document.querySelectorAll('.piece')[player];
-        currentPiece.removeEventListener('animationend', walk)
         const walk = () => {
           if (this.walked > 0) {
             this.players[player].position++;
             if (this.players[player].position > this.totalSquares) {
               this.players[player].position--;
               this.bounceBack(player)
-              currentPiece.removeEventListener('animationend', walk)
             } else {
               this.walked--;
-              currentPiece.addEventListener('animationend', walk)
+              setTimeout(walk,500)
             }
           } else {
             this.checkPosition(player)
-            currentPiece.removeEventListener('animationend', walk)
           }
         }
         walk();
       },
       bounceBack (player) {
-        currentPiece = document.querySelectorAll('.piece')[player];
-        currentPiece.removeEventListener('animationend', bounce)
         const bounce = () => {
           if (this.walked > 0) {
             this.players[player].position--;
             this.walked--;
-            currentPiece.addEventListener('animationend', bounce)
+            setTimeout(bounce,500)
           } else {
             this.checkPosition(player)
-            currentPiece.removeEventListener('animationend', bounce)
           }
         }
         bounce()
@@ -148,8 +141,7 @@
       }
     },
     created () {
-      currentPiece = document.querySelector('.piece');
-      this.createPlayers();
+      this.setupBoard();
     }
   };
 </script>
