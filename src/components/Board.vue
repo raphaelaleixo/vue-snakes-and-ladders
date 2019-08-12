@@ -1,39 +1,36 @@
 <template>
-  <transition-group name="move-piece"
-    tag="div"
-    class="board"
-    :style="{'grid-template-areas':boardGrid}">
-    <square :square="square"
-      v-for="square in game.board.squares"
-      :key="'square-'+square.number">
-    </square>
-    <piece v-for="player in players"
-      :key="'player-'+player.number"
-      :style="{'grid-area':'square'+player.position}"
-      :player="player"
-      :game="game" />
-  </transition-group>
+<div>
+    <div class="board" :style="{'grid-template-areas':boardGrid}">
+      <square :square="square"
+        v-for="square in game.board.squares"
+        :key="'square-'+square.number">
+      </square>
+    </div>
+    <transition-group name="move-piece"
+      tag="div"
+      class="board"
+      :style="{'grid-template-areas':boardGrid}">
+      <piece v-for="player in players"
+        :key="'player-'+player.number"
+        :style="{'grid-area':'square'+player.position}"
+        :player="player" />
+    </transition-group>
+  </div>
 </template>
 
 <script>
   let currentPiece;
   import Square from '@/components/Square';
   import Piece from '@/components/Piece';
+  import {mapActions} from 'vuex';
   export default {
     name: "board",
     data () {
       return {
-        players: [
-          {
-            position: 1,
-            number: 0
-          },
-          {
-            position: 1,
-            number: 1
-          }
-        ],
-        walked: 0
+        players: [],
+        walked: 0,
+        turn:0,
+        transition: 500
       }
     },
     props: {
@@ -70,10 +67,13 @@
     },
     watch: {
       game: function (state) {
-        this.walkTo(state.dice.dice1 + state.dice.dice2, this.game.turn);
+        if (state.dice.locked === true) {
+          this.walkTo(state.dice.dice1 + state.dice.dice2, this.game.turn % this.game.numberOfPlayers);
+        }
       }
     },
     methods: {
+      ...mapActions(['updateGame']),
       createPlayers () {
         this.players = this.game.players.map((item, index) => ({ ...item, number: index }))
       },
@@ -82,7 +82,6 @@
         this.game.dice.dice2 = Math.floor(Math.random() * 6) + 1;
       },
       walkTo (value, player) {
-        this.game.dice.locked = true;
         this.walked = value;
         this.trywalk(player)
       },
@@ -123,28 +122,34 @@
         bounce()
       },
       checkPosition (player) {
-        let specialPositions = this.board.squares.map(item => item.from);
+        let specialPositions = this.game.board.squares.map(item => item.from);
         if (specialPositions.includes(this.players[player].position)) {
-          let rule = this.board.squares.filter(item => item.from === this.players[player].position)
+          let rule = this.game.board.squares.filter(item => item.from === this.players[player].position)
           this.players[player].position = rule[0].to
         }
         if (this.players[player].position === this.totalSquares) {
-          this.game.winner = 'player-' + this.game.turn;
+          this.game.winner = 'player-' + this.game.turn % this.game.numberOfPlayers;
+          this.updateGame({
+            ...this.game,
+            players: [...this.players]
+          })
           return false;
         }
         this.nextTurn()
       },
       nextTurn () {
-        this.game.turn++;
-        if (this.game.turn === this.players.length) {
-          this.game.turn = 0;
-        }
         this.game.dice.locked = false;
+        this.turn++;
+        this.updateGame({
+            ...this.game,
+            turn: this.turn,
+            players: [...this.players]
+        })
       }
     },
     created () {
       currentPiece = document.querySelector('.piece');
-      //this.createPlayers();
+      this.createPlayers();
     }
   };
 </script>
@@ -156,7 +161,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    background: #f8ffe5;
     box-shadow: 0 0 0.25em 0 #00000040, 0 0 2em 0 #00000020;
     border-radius: 3px;
     overflow: hidden;
@@ -174,33 +178,36 @@
   .piece:before {
     content: "";
     position: absolute;
-    width: calc(50% - 1em);
-    height: calc(50% - 1em);
+    width: 35%;
+    height: 35%;
     background: red;
-    top: 0.5em;
-    left: 0.5em;
+    top: 10%;
+    left: 10%;
     border-radius: 50%;
     box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.5), 0 0 0.5em 0 #00000088;
   }
   .piece:nth-last-child(2):before {
     top: auto;
-    bottom: 0.5em;
+    bottom: 10%;
     background: blue;
   }
   .piece:nth-last-child(3):before {
     left: auto;
-    right: 0.5em;
+    right: 10%;
     background: green;
   }
   .piece:nth-last-child(4):before {
     left: auto;
     top: auto;
-    bottom: 0.5em;
-    right: 0.5em;
+    bottom: 10%;
+    right: 10%;
     background: yellow;
   }
   .move-piece {
     transition: all 1s;
+  }
+  .move-piece-move {
+    z-index:10;
   }
   .move-piece-move:before {
     animation: bounce 0.5s linear 0s;

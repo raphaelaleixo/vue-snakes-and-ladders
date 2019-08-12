@@ -43,7 +43,7 @@
     methods: {
       ...mapActions(['addGame']),
       async createNewGame () {
-        const teste = await this.addGame(this.newgame);
+        await this.addGame(this.newgame);
         this.$router.push('/game/' + this.game.url);
       }
     }

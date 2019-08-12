@@ -1,26 +1,6 @@
 import database from '@/database';
 
-const snapshotToArray = snapshot => {
-  var returnArr = [];
-  snapshot.forEach(function(childSnapshot) {
-    var item = childSnapshot.val();
-    item.key = childSnapshot.key;
-    returnArr.push(item);
-  });
-  return returnArr;
-};
-
 export default {
-  loadMemberList: async context => {
-    await database.ref('members/').once('value', function(snapshot) {
-      context.commit('LOAD_MEMBERS', snapshotToArray(snapshot));
-    });
-  },
-  loadProjectList: async context => {
-    await database.ref('projects/').once('value', function(snapshot) {
-      context.commit('LOAD_PROJECTS', snapshotToArray(snapshot));
-    });
-  },
   loadGame: async (context, payload) => {
     const loadedGame = await database
       .ref('/')
@@ -32,6 +12,11 @@ export default {
     loadedGame.on('child_changed', snapshot => {
       context.commit('SET_GAME', snapshot.val());
     });
+  },
+  updateGame: async (context,payload) => {
+    if (context.state.game.turn < payload.turn) {
+      await database.ref('/'+payload.id).set(payload);
+    }
   },
   addGame: async (context, payload) => {
     const gameList = database.ref('/');
