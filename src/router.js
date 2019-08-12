@@ -14,9 +14,9 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/board',
-      name: 'board',
-      component: () => import('./views/Board.vue'),
+      path: '/game/:id',
+      name: 'game',
+      component: () => import('./views/Game.vue'),
     },
   ],
 });
