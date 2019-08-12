@@ -38,9 +38,8 @@ export default {
       ...payload,
       players: createPlayers(),
       id: gamekey,
-      url: gamekey.slice(-5),
+      url: Math.random().toString(36).substring(2, 7),
       winner: false,
-      walked: 0,
       turn: 0,
       board: {
         squares: [],
