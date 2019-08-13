@@ -1,12 +1,4 @@
 <template>
-  <!-- <div>
-      Player: {{game.turn + 1}}</div>
-    <div>Die 01: {{dice.dice1}} </div>
-    <div>Die 02: {{dice.dice2}} </div>
-    <div v-if="game.winner">Winner: Player {{game.turn + 1}}</div>
-    <button v-if="!game.winner"
-      :disabled="dice.locked"
-      @click="walkTo(game.turn)">Roll dice</button> -->
   <board v-if="game.board"
     :game="game" />
 </template>
