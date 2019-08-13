@@ -1,6 +1,7 @@
 <template>
-<div>
-    <div class="board" :style="{'grid-template-areas':boardGrid}">
+  <div>
+    <div class="board"
+      :style="{'grid-template-areas':boardGrid}">
       <square :square="square"
         v-for="square in game.board.squares"
         :key="'square-'+square.number">
@@ -21,14 +22,14 @@
 <script>
   import Square from '@/components/Square';
   import Piece from '@/components/Piece';
-  import {mapActions} from 'vuex';
+  import { mapActions } from 'vuex';
   export default {
     name: "board",
     data () {
       return {
         players: [],
         walked: 0,
-        turn:0,
+        turn: 0,
         transition: 500
       }
     },
@@ -94,7 +95,7 @@
               this.bounceBack(player)
             } else {
               this.walked--;
-              setTimeout(walk,500)
+              setTimeout(walk, 500)
             }
           } else {
             this.checkPosition(player)
@@ -107,7 +108,7 @@
           if (this.walked > 0) {
             this.players[player].position--;
             this.walked--;
-            setTimeout(bounce,500)
+            setTimeout(bounce, 500)
           } else {
             this.checkPosition(player)
           }
@@ -134,9 +135,9 @@
         this.game.dice.locked = false;
         this.turn++;
         this.updateGame({
-            ...this.game,
-            turn: this.turn,
-            players: [...this.players]
+          ...this.game,
+          turn: this.turn,
+          players: [...this.players]
         })
       }
     },
@@ -199,7 +200,7 @@
     transition: all 1s;
   }
   .move-piece-move {
-    z-index:10;
+    z-index: 10;
   }
   .move-piece-move:before {
     animation: bounce 0.5s linear 0s;

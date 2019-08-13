@@ -13,10 +13,13 @@ export default {
       context.commit('SET_GAME', snapshot.val());
     });
   },
-  updateGame: async (context,payload) => {
+  updateGame: async (context, payload) => {
     if (context.state.game.turn < payload.turn) {
-      await database.ref('/'+payload.id).set(payload);
+      await database.ref('/' + payload.id).set(payload);
     }
+  },
+  updateDice: async (context, payload) => {
+    await database.ref('/' + payload.id).set(payload);
   },
   addGame: async (context, payload) => {
     const gameList = database.ref('/');
@@ -38,7 +41,9 @@ export default {
       ...payload,
       players: createPlayers(),
       id: gamekey,
-      url: Math.random().toString(36).substring(2, 7),
+      url: Math.random()
+        .toString(36)
+        .substring(2, 7),
       winner: false,
       turn: 0,
       board: {
