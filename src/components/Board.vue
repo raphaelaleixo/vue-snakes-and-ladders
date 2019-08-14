@@ -11,7 +11,7 @@
       tag="div"
       class="board"
       :style="{'grid-template-areas':boardGrid}">
-      <piece v-for="player in players"
+      <piece v-for="player in game.players"
         :key="'player-'+player.number"
         :style="{'grid-area':'square'+player.position}"
         :player="player" />
@@ -22,17 +22,8 @@
 <script>
   import Square from '@/components/Square';
   import Piece from '@/components/Piece';
-  import { mapActions } from 'vuex';
   export default {
     name: "board",
-    data () {
-      return {
-        players: [],
-        walked: 0,
-        turn: 0,
-        transition: 500
-      }
-    },
     props: {
       game: Object
     },
@@ -41,9 +32,6 @@
       Piece
     },
     computed: {
-      totalSquares () {
-        return this.game.base * this.game.base;
-      },
       boardGrid () {
         let grid = "";
         let base = parseInt(this.game.base);
@@ -64,85 +52,6 @@
         }
         return grid;
       }
-    },
-    watch: {
-      game: function (state) {
-        if (state.dice.locked === true) {
-          this.walkTo(state.dice.dice1 + state.dice.dice2, this.game.turn % this.game.numberOfPlayers);
-        }
-      }
-    },
-    methods: {
-      ...mapActions(['updateGame']),
-      setupBoard () {
-        this.players = this.game.players.map((item, index) => ({ ...item, number: index }))
-        this.turn = this.game.turn;
-      },
-      rollDice () {
-        this.game.dice.dice1 = Math.floor(Math.random() * 6) + 1;
-        this.game.dice.dice2 = Math.floor(Math.random() * 6) + 1;
-      },
-      walkTo (value, player) {
-        this.walked = value;
-        this.trywalk(player)
-      },
-      trywalk (player) {
-        const walk = () => {
-          if (this.walked > 0) {
-            this.players[player].position++;
-            if (this.players[player].position > this.totalSquares) {
-              this.players[player].position--;
-              this.bounceBack(player)
-            } else {
-              this.walked--;
-              setTimeout(walk, 500)
-            }
-          } else {
-            this.checkPosition(player)
-          }
-        }
-        walk();
-      },
-      bounceBack (player) {
-        const bounce = () => {
-          if (this.walked > 0) {
-            this.players[player].position--;
-            this.walked--;
-            setTimeout(bounce, 500)
-          } else {
-            this.checkPosition(player)
-          }
-        }
-        bounce()
-      },
-      checkPosition (player) {
-        let specialPositions = this.game.board.squares.map(item => item.from);
-        if (specialPositions.includes(this.players[player].position)) {
-          let rule = this.game.board.squares.filter(item => item.from === this.players[player].position)
-          this.players[player].position = rule[0].to
-        }
-        if (this.players[player].position === this.totalSquares) {
-          this.game.winner = 'player-' + this.game.turn % this.game.numberOfPlayers;
-          this.updateGame({
-            ...this.game,
-            players: [...this.players]
-          })
-          return false;
-        }
-        this.nextTurn()
-      },
-      nextTurn () {
-        this.game.dice.locked = false;
-        this.turn++;
-        this.updateGame({
-          ...this.game,
-          turn: this.turn,
-          players: [...this.players]
-        })
-      }
-    },
-    created () {
-      this.setupBoard();
     }
   };
 </script>
