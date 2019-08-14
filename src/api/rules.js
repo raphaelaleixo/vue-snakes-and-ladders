@@ -78,9 +78,9 @@ export default {
             numberOfPlayers,
             base,
             totalSquares,
+            gamekey,
             players: createPlayers(numberOfPlayers),
-            id: gamekey,
-            url: Math.random()
+            gameId: Math.random()
                 .toString(36)
                 .substring(2, 7),
             winner: false,
@@ -96,6 +96,8 @@ export default {
 
     playTurn (gameData, player, localCallback, serverCallback) {
         let game = gameData;
+        game.walked = game.dice.dice1 + game.dice.dice2;
+        
         const nextTurn = () => {
             game.dice.locked = false;
             game.turn++;
@@ -145,7 +147,7 @@ export default {
             }
             bounce()
         }
-        game.walked = game.dice.dice1 + game.dice.dice2;
+        
         walkForward(player);
     }  
 }

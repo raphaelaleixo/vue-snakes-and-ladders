@@ -30,9 +30,9 @@
       ...mapActions(['loadGame','setLocalGame','updateGame']),
     },
     async mounted () {
-      if (!this.game.url) {
-        const url = this.$route.params.id;
-        await this.loadGame(url);
+      if (!this.game.gameId) {
+        const gameId = this.$route.params.id;
+        await this.loadGame(gameId);
       }
     }
   };

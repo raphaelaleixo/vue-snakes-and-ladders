@@ -44,7 +44,7 @@
       ...mapActions(['addGame']),
       async createNewGame () {
         await this.addGame(this.newgame);
-        this.$router.push('/game/' + this.game.url);
+        this.$router.push('/game/' + this.game.gameId);
       }
     }
   }

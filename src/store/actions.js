@@ -5,7 +5,7 @@ export default {
   loadGame: async (context, payload) => {
     const loadedGame = await database
       .ref('/')
-      .orderByChild('url')
+      .orderByChild('gameId')
       .equalTo(payload);
     await loadedGame.on('child_added', snapshot => {
       context.commit('SET_GAME', snapshot.val());
@@ -22,14 +22,14 @@ export default {
   },
   updateGame: async (context, payload) => {
     if (context.state.game.turn < payload.turn) {
-      await database.ref('/' + payload.id).set({
+      await database.ref('/' + payload.gamekey).set({
         ...payload,
         serverUpdate: true
       });
     }
   },
   updateDice: async (context, payload) => {
-    await database.ref('/' + payload.id).set({
+    await database.ref('/' + payload.gamekey).set({
       ...payload,
       serverUpdate: true
     });
@@ -41,6 +41,6 @@ export default {
     const gameData = rules.createGame(payload.base, payload.numberOfPlayers, gamekey);
     await game.set(gameData);
     context.commit('SET_GAME', gameData);
-    context.dispatch('loadGame', gameData.url);
+    context.dispatch('loadGame', gameData.gameId);
   },
 };
