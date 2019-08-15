@@ -1,21 +1,23 @@
+const gameDefinitions = {
+    transitionTime: 500,
+    playerColors: []
+}
+
 export default {
 
-    createGame (base, numberOfPlayers, gamekey) {
-        
-        const totalSquares = base * base;
-        
+    createGame (base, numberOfPlayers, gamekey) {       
+        const totalSquares = base * base;       
         const createPlayers = numberOfPlayers => {
             const players = [];
             for (let i = 0; i < numberOfPlayers; i++) {
                 players.push({
                     position: 1,
+                    number: i+1
                 });
             }
             return players;
         }
-
         const createBoard = base => {
-
             let squares = [];
             let specialSquares = [1, totalSquares];
             for (let i = 1; i < totalSquares + 1; i++) {
@@ -73,8 +75,8 @@ export default {
                 specialSquares
             }
         }
-
         return {
+            gameDefinitions,
             numberOfPlayers,
             base,
             totalSquares,
@@ -96,8 +98,7 @@ export default {
 
     playTurn (gameData, player, localCallback, serverCallback) {
         let game = gameData;
-        game.walked = game.dice.dice1 + game.dice.dice2;
-        
+        game.walked = game.dice.dice1 + game.dice.dice2;      
         const nextTurn = () => {
             game.dice.locked = false;
             game.turn++;
@@ -126,7 +127,7 @@ export default {
                     } else {
                         game.walked--;
                         localCallback(game);
-                        setTimeout(walk, 500)
+                        setTimeout(walk, game.gameDefinitions.transitionTime)
                     }
                 } else {
                     checkPosition(player)
@@ -140,14 +141,13 @@ export default {
                     game.players[player].position--;
                     game.walked--;
                     localCallback(game);
-                    setTimeout(bounce, 500)
+                    setTimeout(bounce, game.gameDefinitions.transitionTime)
                 } else {
                     checkPosition(player)
                 }
             }
             bounce()
-        }
-        
+        }       
         walkForward(player);
     }  
 }

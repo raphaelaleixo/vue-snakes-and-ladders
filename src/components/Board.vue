@@ -13,7 +13,8 @@
       :style="{'grid-template-areas':boardGrid}">
       <piece v-for="player in game.players"
         :key="'player-'+player.number"
-        :style="{'grid-area':'square'+player.position}"
+        :style="{'grid-area':'square'+player.position,
+                 'transition-duration':game.gameDefinitions.transitionTime+'ms'}"
         :player="player" />
     </transition-group>
   </div>

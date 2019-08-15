@@ -1,5 +1,5 @@
-var firebase = require('firebase/app');
-require('firebase/database');
+import * as firebase from "firebase/app";
+import "firebase/database";
 const config = {
   apiKey: 'AIzaSyCBVBsMdnvhfwGGvqQMraWCFyyTDT6O32A',
   authDomain: 'upsanddowns-3994e.firebaseapp.com',
