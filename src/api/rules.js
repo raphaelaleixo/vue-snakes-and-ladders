@@ -19,8 +19,8 @@ export default {
         }
         const createBoard = base => {
             let squares = [];
-            let specialSquares = [1, totalSquares];
-            for (let i = 1; i < totalSquares + 1; i++) {
+            let specialSquares = [1, 2, totalSquares];
+            for (let i = 1; i <= totalSquares; i++) {
                 squares = [
                     ...squares,
                     {
