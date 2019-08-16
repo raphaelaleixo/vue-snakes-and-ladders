@@ -1,17 +1,28 @@
 <template>
-  <board v-if="game.board"
-    :game="game" />
+  <div class="game">
+    <div class="game__players">
+      <game-players :game="game" v-if="game.players"/>
+    </div>
+    <div class="game__main">
+      <div class="game__board">
+        <game-board v-if="game.board"
+          :game="game" /> 
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-  import Board from '@/components/Board';
+  import GameBoard from '@/components/GameBoard';
+  import GamePlayers from '@/components/GamePlayers';
   import rules from '@/api/rules';
   import { mapState } from 'vuex';
   import { mapActions } from 'vuex';
   export default {
     name: "game",
     components: {
-      Board,
+      GameBoard,
+      GamePlayers
     },
     watch: {
       game: function (state) {
@@ -37,3 +48,19 @@
     }
   };
 </script>
+<style lang="scss" scoped>
+  .game {
+    display: contents;
+  }
+  .game__main {
+      grid-area:main;
+      display:flex;
+      align-items:center;
+  }
+  .game__board {
+    position:relative;
+    width:100%;
+    padding-bottom:100%;
+  }
+</style>
+

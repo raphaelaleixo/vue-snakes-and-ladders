@@ -2,16 +2,15 @@
   <div>
     <div class="board"
       :style="{'grid-template-areas':boardGrid}">
-      <square :square="square"
+      <game-board-square :square="square"
         v-for="square in game.board.squares"
-        :key="'square-'+square.number">
-      </square>
+        :key="'square-'+square.number"/>
     </div>
     <transition-group name="move-piece"
       tag="div"
       class="board"
       :style="{'grid-template-areas':boardGrid}">
-      <piece v-for="player in game.players"
+      <game-board-piece v-for="player in game.players"
         :key="'player-'+player.number"
         :style="{'grid-area':'square'+player.position,
                  'transition-duration':game.gameDefinitions.transitionTime+'ms'}"
@@ -21,16 +20,16 @@
 </template>
 
 <script>
-  import Square from '@/components/Square';
-  import Piece from '@/components/Piece';
+  import GameBoardSquare from '@/components/GameBoardSquare';
+  import GameBoardPiece from '@/components/GameBoardPiece';
   export default {
     name: "board",
     props: {
       game: Object
     },
     components: {
-      Square,
-      Piece
+      GameBoardSquare,
+      GameBoardPiece
     },
     computed: {
       boardGrid () {
@@ -56,7 +55,7 @@
     }
   };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .board {
     height: 100%;
     width: 100%;

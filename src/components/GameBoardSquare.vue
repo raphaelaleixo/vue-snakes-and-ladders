@@ -21,7 +21,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @mixin square($color) {
     background-color: $color;
     color: darken($color, 50%);
