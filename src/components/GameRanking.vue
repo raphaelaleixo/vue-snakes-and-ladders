@@ -12,8 +12,8 @@ export default {
   },
   computed: {
     ranking() {
-      let playerRanking = [...this.game.players];
-      return playerRanking.sort((a, b) => {
+      let players = [...this.game.players];
+      return players.sort((a, b) => {
         if (a.position > b.position) {
           return -1;
         }
