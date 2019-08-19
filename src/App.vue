@@ -1,7 +1,7 @@
 <template>
   <div id="app"
     class="wrapper">
-    <game-header />
+    <!-- <game-header /> -->
     <router-view />
   </div>
 </template>

@@ -3,10 +3,10 @@ import rules from '@/api/rules'
 
 export default {
   loadGame: async (context, payload) => {
-    const loadedGame = await database
+    const loadedGame = database
       .ref('/')
       .orderByChild('gameId')
-      .equalTo(payload);
+      .equalTo(payload);  
     await loadedGame.on('child_added', snapshot => {
       context.commit('SET_GAME', snapshot.val());
     });
@@ -27,6 +27,21 @@ export default {
         serverUpdate: true
       });
     }
+  },
+  updatePlayerStatus: async (context, payload) => {
+    const actualPlayer = database.ref('/' + payload.game.gamekey + '/players/' + (parseInt(payload.player.number) - 1));
+    await actualPlayer.on('value', snapshot => {
+      if (snapshot.val() === false) {
+        return
+      }
+      actualPlayer.onDisconnect().update({
+        status: 'offline'
+      }).then(()=>{
+        actualPlayer.update({
+          status: 'online'
+        })
+      })
+    })
   },
   updateDice: async (context, payload) => {
     await database.ref('/' + payload.gamekey).set({
