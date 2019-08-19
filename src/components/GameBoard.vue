@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="board"
+    <div class="board board--base"
       :style="{'grid-template-areas':boardGrid}">
       <game-board-square :square="square"
         v-for="square in game.board.squares"
-        :key="'square-'+square.number"/>
+        :key="'square-'+square.number" />
     </div>
     <transition-group name="move-piece"
       tag="div"
@@ -12,8 +12,9 @@
       :style="{'grid-template-areas':boardGrid}">
       <game-board-piece v-for="player in game.players"
         :key="'player-'+player.number"
+        :color="defs.playerColors[player.number -1]"
         :style="{'grid-area':'square'+player.position,
-                 'transition-duration':game.gameDefinitions.transitionTime+'ms'}"
+                 'transition-duration':defs.transitionTime+'ms'}"
         :player="player" />
     </transition-group>
   </div>
@@ -25,7 +26,8 @@
   export default {
     name: "board",
     props: {
-      game: Object
+      game: Object,
+      defs: Object
     },
     components: {
       GameBoardSquare,
@@ -63,9 +65,14 @@
     position: absolute;
     top: 0;
     left: 0;
-    box-shadow: 0 0 0.25em 0 #00000040, 0 0 2em 0 #00000020;
     border-radius: 3px;
     overflow: hidden;
     border: 2px solid darken(#ffed66, 25%);
+    &.board--base {
+      box-shadow: 0 0 0.25em 0 #00000040, 0 0 2em 0 #00000020;
+    }
+    &:not(.board--base) {
+      pointer-events: none;
+    }
   }
 </style>

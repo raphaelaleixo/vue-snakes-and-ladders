@@ -1,17 +1,21 @@
 <template>
   <div class="game">
     <div class="game__players">
-      <game-ranking :game="game" v-if="game.players"/>
+      <game-ranking :game="game"
+        :defs="defs"
+        v-if="game.players" />
     </div>
     <div class="game__main">
       <div class="game__board">
         <game-board v-if="game.board"
-          :game="game" /> 
+          :game="game"
+          :defs="defs" />
       </div>
     </div>
     <div class="game__dice">
-      <game-dice :game="game" v-if="game.dice"/>
-
+      <game-dice :game="game"
+        :defs="defs"
+        v-if="game.dice" />
     </div>
   </div>
 </template>
@@ -33,18 +37,20 @@
     watch: {
       game: function (state) {
         if (state.serverUpdate && state.dice.locked === true) {
-          rules.playTurn(state, this.actualPlayer, this.setLocalGame, this.updateGame);
+          setTimeout(() => {
+            rules.playTurn({ state, defs: this.defs }, this.actualPlayer, this.setLocalGame, this.updateGame)          }
+            , this.defs.dice.rotations * this.defs.dice.timing);
         }
       }
     },
     computed: {
-      ...mapState(['game']),
-      actualPlayer() {
+      ...mapState(['game', 'defs']),
+      actualPlayer () {
         return this.game.turn % this.game.numberOfPlayers;
       }
     },
     methods: {
-      ...mapActions(['loadGame','setLocalGame','updateGame']),
+      ...mapActions(['loadGame', 'setLocalGame', 'updateGame']),
     },
     async mounted () {
       if (!this.game.gameId) {
@@ -59,17 +65,14 @@
     display: contents;
   }
   .game__main {
-      grid-area:main;
-      display:flex;
-      align-items:center;
+    grid-area: main;
+    display: flex;
+    align-items: flex-start;
   }
   .game__board {
-    position:relative;
-    width:100%;
-    padding-bottom:100%;
-  }
-  .game__dice {
-    grid-area:right;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
   }
 </style>
 

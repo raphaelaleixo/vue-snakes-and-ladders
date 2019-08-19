@@ -1,6 +1,18 @@
 <template>
-  <div class="piece"></div>
+  <div class="piece">
+    <div class="piece__circle"
+      :style="{'background-color':color}"></div>
+  </div>
 </template>
+<script>
+  export default {
+    props: {
+      color: String,
+    },
+
+  }
+</script>
+
 <style lang="scss">
   .piece {
     transition: all 0.5s;
@@ -10,8 +22,7 @@
   .piece--active {
     z-index: 10;
   }
-  .piece:before {
-    content: "";
+  .piece__circle {
     position: absolute;
     width: 35%;
     height: 35%;
@@ -21,17 +32,17 @@
     border-radius: 50%;
     box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.5), 0 0 0.5em 0 #00000088;
   }
-  .piece:nth-last-child(2):before {
+  .piece:nth-last-child(2) .piece__circle {
     top: auto;
     bottom: 10%;
     background: blue;
   }
-  .piece:nth-last-child(3):before {
+  .piece:nth-last-child(3) .piece__circle {
     left: auto;
     right: 10%;
     background: green;
   }
-  .piece:nth-last-child(4):before {
+  .piece:nth-last-child(4) .piece__circle {
     left: auto;
     top: auto;
     bottom: 10%;
@@ -44,7 +55,7 @@
   .move-piece-move {
     z-index: 10;
   }
-  .move-piece-move:before {
+  .move-piece-move .piece__circle {
     animation: bounce 0.5s linear 0s;
   }
   @keyframes bounce {

@@ -2,7 +2,8 @@
   <div class="board__square square"
     :class="'square--'+square.type"
     :style="{'grid-area':'square'+(square.number)}">
-    <span class="square__number">{{squareText}}</span>
+    <span v-if="!square.to"
+      class="square__number">{{squareText}}</span>
     <span v-if="square.to"
       class="square__number square__to">{{square.to}}</span>
   </div>
@@ -15,7 +16,7 @@
     },
     computed: {
       squareText () {
-        return this.square.type === 'goal' ? 'Goal!' : this.square.number
+        return this.square.type === 'goal' ? 'Goal' : this.square.number
       }
     }
   }
@@ -25,6 +26,7 @@
   @mixin square($color) {
     background-color: $color;
     color: darken($color, 50%);
+
     &:nth-child(even) {
       background-color: rgba($color, 0.7);
     }
@@ -35,6 +37,9 @@
     font-weight: bolder;
     text-transform: uppercase;
     position: relative;
+    letter-spacing: -1px;
+    overflow: hidden;
+    border: 2px solid darken(#ffed66, 25%);
     @include square(#ffed66);
   }
   .square--higher {
@@ -61,22 +66,28 @@
     }
   }
   .square__to {
-    top: 0.5em;
-    right: 1em;
+    color: darken(#00cecb, 20%);
+    font-size: 1.5em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
   }
-  .square__to:after {
-    content: "\2191";
+  .square--higher:after,
+  .square--lower:after {
+    content: "\1F81D";
     position: absolute;
-    font-size: 1.25em;
-    bottom: 0;
+    font-size: 5em;
+    top: 50%;
+    left: 50%;
+    line-height: 1;
+    color: rgba(#fff, 0.3);
+    transform: translate(-50%, -50%);
   }
   .square--lower .square__to {
     color: darken(#ff5e5b, 40%);
-    top: auto;
-    bottom: 0.5em;
-    right: 1em;
   }
-  .square--lower .square__to:after {
-    content: "\2193";
+  .square--lower:after {
+    content: "\1F81F";
   }
 </style>

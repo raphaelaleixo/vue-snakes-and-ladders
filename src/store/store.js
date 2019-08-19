@@ -10,6 +10,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     game: {},
+    defs: {
+      transitionTime: 500,
+      dice: {
+        rotations: 10,
+        timing: 250,
+      },
+      playerColors: ['#f6511d', '#00a6ed', '#7FB800', '#FFB400'],
+    },
   },
   getters,
   mutations,
