@@ -1,7 +1,7 @@
 <template>
   <div id="app"
     class="wrapper">
-    <!-- <game-header /> -->
+    <game-header />
     <router-view />
   </div>
 </template>
@@ -39,10 +39,38 @@
     margin: 0 auto;
     grid-gap: 1em 2em;
     grid-template-columns: 1fr 75vh 1fr;
-    grid-template-rows: 6em 75vh 1fr;
+    grid-template-rows: 6em 75vh;
     grid-template-areas:
       "header header header"
-      "left main right "
-      "footer footer footer";
+      "left main right ";
+    @media screen and (max-width: 90em) {
+      width: calc(100% - 2em);
+      grid-template-columns: auto;
+      grid-template-rows: auto auto calc(100vw - 2em) auto;
+      grid-template-areas:
+        "header"
+        "left"
+        "main"
+        "right";
+      padding: 0;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      background: #ff5e5b;
+      font-weight: bolder;
+      border-radius: 2em;
+      padding: 1em 2em;
+      text-transform: uppercase;
+      font-size: 1em;
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      margin: 1em 0;
+      transition: background-color 0.3s ease-out;
+      &:disabled {
+        background: #cabcbc;
+      }
+    }
   }
 </style>

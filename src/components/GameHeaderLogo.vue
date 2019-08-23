@@ -19,6 +19,7 @@
     font-size: 2.5em;
     letter-spacing: -1px;
     line-height: 0.8;
+    margin: 0;
   }
   .logo__link {
     color: inherit;

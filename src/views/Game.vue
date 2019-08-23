@@ -1,9 +1,12 @@
 <template>
   <div class="game">
     <div class="game__players">
-      <game-ranking :game="game"
+      <game-turn :game="game"
+        v-if="game.players"
+        :actualPlayer="actualPlayer" />
+      <game-dice :game="game"
         :defs="defs"
-        v-if="game.players" />
+        v-if="game.dice" />
     </div>
     <div class="game__main">
       <div class="game__board">
@@ -13,15 +16,16 @@
       </div>
     </div>
     <div class="game__dice">
-      <game-dice :game="game"
+      <game-ranking :game="game"
         :defs="defs"
-        v-if="game.dice" />
+        v-if="game.players" />
     </div>
   </div>
 </template>
 
 <script>
   import GameBoard from '@/components/GameBoard';
+  import GameTurn from '@/components/GameTurn';
   import GameRanking from '@/components/GameRanking';
   import GameDice from '@/components/GameDice';
   import rules from '@/api/rules';
@@ -32,6 +36,7 @@
     components: {
       GameBoard,
       GameDice,
+      GameTurn,
       GameRanking
     },
     watch: {

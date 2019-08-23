@@ -26,7 +26,7 @@
   .dice__wrapper {
     width: 100%;
     margin: 1em 0;
-    height: 6em;
+    height: 3em;
     display: flex;
     perspective: 99999px;
   }

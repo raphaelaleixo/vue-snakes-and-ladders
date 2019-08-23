@@ -98,15 +98,17 @@ export default {
       game.turn++;
       serverCallback(game);
     };
-    const checkPosition = player => {
+    const checkPosition = async player => {
       let specialPositions = game.board.squares.map(item => item.from);
       if (specialPositions.includes(game.players[player].position)) {
         let rule = game.board.squares.filter(item => item.from === game.players[player].position);
         game.players[player].position = rule[0].to;
       }
       if (game.players[player].position === game.totalSquares) {
+        game.dice.locked = false;
         game.winner = (game.turn % game.numberOfPlayers) + 1;
-        serverCallback(game);
+        game.turn++;
+        await serverCallback(game);
         return false;
       }
       nextTurn();

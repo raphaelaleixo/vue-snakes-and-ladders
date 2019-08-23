@@ -27,10 +27,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1em 0;
+    @media screen and (max-width: 90em) {
+      flex-wrap: wrap;
+    }
   }
   .nav__list {
     list-style-type: none;
     display: flex;
+    margin: 0;
+    padding: 0;
   }
   .nav__item {
     margin: 0 0 0 1em;

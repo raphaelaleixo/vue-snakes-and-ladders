@@ -1,12 +1,10 @@
 <template>
   <div class="ranking">
-    <h2 class="ranking__title">Player {{actualPlayer}}'s turn</h2>
     <transition-group name="move-ranking">
-      <game-ranking-player
-        v-for="(player) in playerRanking"
+      <game-ranking-player v-for="(player) in playerRanking"
         :key="player.number"
         :player="player"
-        :style="{'color':defs.playerColors[player.number -1]}">    
+        :style="{'color':defs.playerColors[player.number -1]}">
       </game-ranking-player>
     </transition-group>
   </div>
@@ -33,5 +31,4 @@
   .ranking__title {
     margin: 0;
   }
- 
 </style>
